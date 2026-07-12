@@ -1,0 +1,1041 @@
+{
+  "datasets": [
+    {
+      "name": "airline_by_year",
+      "displayName": "Airline Performance by Year",
+      "config": {
+        "version": "1.1",
+        "source": "SELECT\n  s.Year,\n  s.Reporting_Airline,\n  a.Description AS Airline_Name,\n  COUNT(*) AS TotalFlights,\n  SUM(s.Cancelled) AS CancelledFlights,\n  SUM(s.Diverted) AS DivertedFlights,\n  AVG(s.ArrDelay) AS AverageArrivalDelay,\n  AVG(s.DepDelay) AS AverageDepartureDelay\nFROM aircraft_data.dataset.silver_flight_data s LEFT JOIN aircraft_data.dataset.aircraft_table a ON s.Reporting_Airline = a.Code GROUP BY s.Year, s.Reporting_Airline, a.Description\n",
+        "dimensions": [
+          {
+            "name": "Year",
+            "expr": "source.Year"
+          },
+          {
+            "name": "Reporting_Airline",
+            "expr": "source.Reporting_Airline"
+          },
+          {
+            "name": "Airline_Name",
+            "expr": "source.Airline_Name"
+          }
+        ],
+        "measures": [
+          {
+            "name": "TotalFlights",
+            "expr": "SUM(source.TotalFlights)"
+          },
+          {
+            "name": "CancelledFlights",
+            "expr": "SUM(source.CancelledFlights)"
+          },
+          {
+            "name": "DivertedFlights",
+            "expr": "SUM(source.DivertedFlights)"
+          },
+          {
+            "name": "AverageArrivalDelay",
+            "expr": "AVG(source.AverageArrivalDelay)"
+          },
+          {
+            "name": "AverageDepartureDelay",
+            "expr": "AVG(source.AverageDepartureDelay)"
+          }
+        ]
+      }
+    }
+  ],
+  "pages": [
+    {
+      "name": "0b305607",
+      "displayName": "Overview",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## ✈ Airline Performance — Batch Ingestion Overview\n",
+                "All metrics sourced from `aircraft_data.dataset.silver_flight_data` · Grouped by Airline & Year"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "year_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f17d84ad3714ca994262d70e4df44d/datasets/01f17d8505ce16509c8cc50797a4ae63_Year",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "Year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Year",
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Year",
+                    "queryName": "dashboards/01f17d84ad3714ca994262d70e4df44d/datasets/01f17d8505ce16509c8cc50797a4ae63_Year"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_total_flights",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "measure(TotalFlights)",
+                      "expression": "MEASURE(`TotalFlights`)"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "`Year`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Total Flights",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(TotalFlights)"
+                },
+                "period": {
+                  "fieldName": "Year"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_cancelled",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "measure(CancelledFlights)",
+                      "expression": "MEASURE(`CancelledFlights`)"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "`Year`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Cancelled Flights",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(CancelledFlights)"
+                },
+                "period": {
+                  "fieldName": "Year"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 4,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_arr_delay",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "measure(AverageArrivalDelay)",
+                      "expression": "MEASURE(`AverageArrivalDelay`)"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "`Year`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Arrival Delay",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(AverageArrivalDelay)"
+                },
+                "period": {
+                  "fieldName": "Year"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 4,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_dep_delay",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "measure(AverageDepartureDelay)",
+                      "expression": "MEASURE(`AverageDepartureDelay`)"
+                    }
+                  ],
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "DESC",
+                      "expression": "`Year`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Avg Departure Delay",
+                "showTitle": true
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(AverageDepartureDelay)"
+                },
+                "period": {
+                  "fieldName": "Year"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 4,
+            "width": 3,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "flights_by_airline",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "measure(TotalFlights)",
+                      "expression": "MEASURE(`TotalFlights`)"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Total Flights by Airline",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(TotalFlights)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Airline_Name",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 7,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "flights_by_year",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "measure(TotalFlights)",
+                      "expression": "MEASURE(`TotalFlights`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Flights Trend by Year",
+                "showTitle": true
+              },
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "Year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(TotalFlights)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 7,
+            "y": 7,
+            "width": 5,
+            "height": 9
+          }
+        },
+        {
+          "widget": {
+            "name": "cancelled_by_airline",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "measure(CancelledFlights)",
+                      "expression": "MEASURE(`CancelledFlights`)"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Cancelled & Diverted by Airline",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(CancelledFlights)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Airline_Name",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 16,
+            "width": 4,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "arr_delay_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "measure(AverageArrivalDelay)",
+                      "expression": "MEASURE(`AverageArrivalDelay`)"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Avg Arrival Delay by Airline",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(AverageArrivalDelay)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Airline_Name",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 16,
+            "width": 4,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "dep_delay_bar",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "measure(AverageDepartureDelay)",
+                      "expression": "MEASURE(`AverageDepartureDelay`)"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Avg Departure Delay by Airline",
+                "showTitle": true
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(AverageDepartureDelay)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Airline_Name",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "x-reversed"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 16,
+            "width": 4,
+            "height": 8
+          }
+        },
+        {
+          "widget": {
+            "name": "summary_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    },
+                    {
+                      "name": "Reporting_Airline",
+                      "expression": "`Reporting_Airline`"
+                    },
+                    {
+                      "name": "measure(TotalFlights)",
+                      "expression": "MEASURE(`TotalFlights`)"
+                    },
+                    {
+                      "name": "measure(CancelledFlights)",
+                      "expression": "MEASURE(`CancelledFlights`)"
+                    },
+                    {
+                      "name": "measure(DivertedFlights)",
+                      "expression": "MEASURE(`DivertedFlights`)"
+                    },
+                    {
+                      "name": "measure(AverageArrivalDelay)",
+                      "expression": "MEASURE(`AverageArrivalDelay`)"
+                    },
+                    {
+                      "name": "measure(AverageDepartureDelay)",
+                      "expression": "MEASURE(`AverageDepartureDelay`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Full Summary Table",
+                "showTitle": true,
+                "showDescription": false
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Year"
+                  },
+                  {
+                    "fieldName": "Airline_Name"
+                  },
+                  {
+                    "fieldName": "Reporting_Airline"
+                  },
+                  {
+                    "fieldName": "measure(TotalFlights)"
+                  },
+                  {
+                    "fieldName": "measure(CancelledFlights)"
+                  },
+                  {
+                    "fieldName": "measure(DivertedFlights)"
+                  },
+                  {
+                    "fieldName": "measure(AverageArrivalDelay)"
+                  },
+                  {
+                    "fieldName": "measure(AverageDepartureDelay)"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 24,
+            "width": 12,
+            "height": 7
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "page1",
+      "displayName": "Delay of Flights",
+      "layout": [
+        {
+          "widget": {
+            "name": "bar_chart1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "measure(TotalFlights)",
+                      "expression": "MEASURE(`TotalFlights`)"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Total Flights by Airline",
+                "showDescription": false
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(TotalFlights)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Airline_Name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 7
+          }
+        },
+        {
+          "widget": {
+            "name": "table1",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "Reporting_Airline",
+                      "expression": "`Reporting_Airline`"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    },
+                    {
+                      "name": "measure(TotalFlights)",
+                      "expression": "MEASURE(`TotalFlights`)"
+                    },
+                    {
+                      "name": "measure(CancelledFlights)",
+                      "expression": "MEASURE(`CancelledFlights`)"
+                    },
+                    {
+                      "name": "measure(DivertedFlights)",
+                      "expression": "MEASURE(`DivertedFlights`)"
+                    },
+                    {
+                      "name": "measure(AverageArrivalDelay)",
+                      "expression": "MEASURE(`AverageArrivalDelay`)"
+                    },
+                    {
+                      "name": "measure(AverageDepartureDelay)",
+                      "expression": "MEASURE(`AverageDepartureDelay`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "table",
+                "showTitle": true
+              },
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "Year"
+                  },
+                  {
+                    "fieldName": "Reporting_Airline"
+                  },
+                  {
+                    "fieldName": "Airline_Name"
+                  },
+                  {
+                    "fieldName": "measure(TotalFlights)"
+                  },
+                  {
+                    "fieldName": "measure(CancelledFlights)"
+                  },
+                  {
+                    "fieldName": "measure(DivertedFlights)"
+                  },
+                  {
+                    "fieldName": "measure(AverageArrivalDelay)"
+                  },
+                  {
+                    "fieldName": "measure(AverageDepartureDelay)"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "year_filter",
+            "queries": [
+              {
+                "name": "dashboards/01f17d84ad3714ca994262d70e4df44d/datasets/01f17d8505ce16509c8cc50797a4ae63_Year",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "Year",
+                      "expression": "`Year`"
+                    },
+                    {
+                      "name": "Year_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "title": "Year",
+                "showTitle": true
+              },
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "Year",
+                    "queryName": "dashboards/01f17d84ad3714ca994262d70e4df44d/datasets/01f17d8505ce16509c8cc50797a4ae63_Year"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_avg_delays",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "measure(AverageArrivalDelay)",
+                      "expression": "MEASURE(`AverageArrivalDelay`)"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Average Arrival Delay by Airline"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(AverageArrivalDelay)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Airline_Name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_departure_delay",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "airline_by_year",
+                  "fields": [
+                    {
+                      "name": "measure(AverageDepartureDelay)",
+                      "expression": "MEASURE(`AverageDepartureDelay`)"
+                    },
+                    {
+                      "name": "Airline_Name",
+                      "expression": "`Airline_Name`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "showTitle": true,
+                "title": "Average Departure Delay by Airline"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "measure(AverageDepartureDelay)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "Airline_Name",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 9,
+            "width": 6,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
