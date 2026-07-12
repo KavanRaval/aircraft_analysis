@@ -55,7 +55,8 @@
             "name": "header",
             "multilineTextboxSpec": {
               "lines": [
-                "## ✈ Airline Performance — Batch Ingestion Overview\n",
+                "## Airline Performance — Batch Ingestion Overview\n",
+                "\n",
                 "All metrics sourced from `aircraft_data.dataset.silver_flight_data` · Grouped by Airline & Year"
               ]
             }
@@ -424,7 +425,10 @@
                 "x": {
                   "fieldName": "Year",
                   "scale": {
-                    "type": "quantitative"
+                    "type": "categorical",
+                    "sort": {
+                      "by": "natural-order"
+                    }
                   }
                 },
                 "y": {
